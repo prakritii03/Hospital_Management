@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Billing & Invoices
+{% endblock title %}
+
+{% block body %}
+
+<div class="container mt-4">
+    <h3 class="text-center text-white bg-dark p-2 rounded">Billing & Invoices</h3>
+    <br>
+
+    {% with messages=get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="table-responsive bg-light p-4 rounded shadow-sm">
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Invoice ID</th>
+                    <th scope="col">Patient Name</th>
+                    <th scope="col">Patient Email</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date Generated</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if bills %}
+                    {% for b in bills %}
+                    <tr>
+                        <td><strong>#INV-{{b.bid}}</strong></td>
+                        <td>{{b.name}}</td>
+                        <td>{{b.email}}</td>
+                        <td>${{b.amount}}</td>
+                        <td>{{b.timestamp}}</td>
+                        <td>
+                            {% if b.status == 'Paid' %}
+                                <span class="badge badge-success">Paid</span>
+                            {% else %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if b.status == 'Pending' %}
+                                <a href="/billing/pay/{{b.bid}}" class="btn btn-outline-success btn-sm">Pay Invoice</a>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm" disabled>Completed</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No invoices found.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock body %}
